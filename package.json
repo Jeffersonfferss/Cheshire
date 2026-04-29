@@ -1,0 +1,32 @@
+{
+  "name": "cheshire",
+  "version": "1.0.0",
+  "description": "Cheshire es la llave a un jardín donde el tiempo te pertenece. Como el guía invisible de Alicia, la app aparece para facilitar cada movimiento y se desvanece para que nada interrumpa tu recorrido. Una herramienta sutil que transforma el campo en un mundo de maravillas, centrada en la fluidez, el detalle y el placer de juga",
+  "main": "src/index.js",
+  "types": "module",
+  "scripts": {
+    "dev": "nodemon src/app.js",
+    "start": "node src/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jeffersonfferss/Cheshire.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Jeffersonfferss/Cheshire/issues"
+  },
+  "homepage": "https://github.com/Jeffersonfferss/Cheshire#readme",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mongoose": "^9.6.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
