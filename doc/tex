@@ -1,0 +1,56 @@
+Descripción del Proyecto
+
+Este proyecto consiste en desarrollar el backend para una aplicación de temática libre, en formato API. La entrega final se hará a través de un repositorio de GitHub.
+
+     Calidad sobre Complejidad
+
+    El objetivo principal de este proyecto no es crear la aplicación más grande o con más funcionalidades, sino demostrar dominio sobre los conceptos fundamentales del backend.
+
+    Evaluaremos la correctitud, la limpieza del código y las buenas prácticas. Preferimos un proyecto pequeño donde la autenticación, la base de datos y el enrutamiento funcionen de manera impecable y segura, antes que un proyecto gigante lleno de errores o código desordenado. "Menos es más, si está bien hecho".
+    
+Requisitos Obligatorios (Mínimos)
+
+    Repositorio y Documentación:
+
+        Uso de GitHub con un README.md claro.
+
+        Memoria del Proyecto: Documento obligatorio detallando decisiones técnicas, retos, soluciones y reparto de tareas.
+
+    Base de Datos:
+
+        Mínimo de 3 tablas/colecciones relacionadas.
+
+    Seguridad y Usuarios:
+
+        Sistema de Autenticación: Registro y login funcional.
+
+        Sistema de Autorización: Roles y/o permisos (ej: Admin vs. Usuario).
+
+    Lógica de Negocio:
+
+        Al menos 3 endpoints operativos (sin contar login/registro).
+
+        Al menos dos de ellos deben realizar modificaciones en la BD (POST, PUT o DELETE).
+
+        API: Endpoints de API correctos y funcionales.
+
+Requisitos Recomendados
+
+Si habéis cubierto los mínimos con solidez, estos puntos elevarán la calidad técnica del trabajo:
+
+    Documentación de Código (JSDoc): Documentar las funciones, rutas y lógica principal del proyecto usando el estándar JSDoc. Esto facilita la mantenibilidad y la colaboración.
+
+    Desarrollo de Vistas: Crear unas vistas para alguna parte como la gestión interna de los datos.
+
+    Uso de ORM/ODM: Implementar herramientas como Sequelize, Prisma o Mongoose para la gestión de datos.
+
+Requisitos Opcionales (Bonus)
+
+Solo si el resto del proyecto es impecable:
+
+    Implementar un sistema de paginación.
+
+    Implementar un sistema de filtrado de datos.
+
+    Implementar un sistema de ordenamiento.
+    Documentar la API.
