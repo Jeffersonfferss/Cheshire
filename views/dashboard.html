@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Cheshire Golf Club</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-inner">
+                <div class="header-brand">
+                    <div class="header-logo">⛳</div>
+                    <h1 class="header-title">Cheshire</h1>
+                    <span id="user-role" class="badge badge-admin"></span>
+                </div>
+                <nav class="header-nav">
+                    <a href="#dashboard" class="header-link active" data-section="dashboard" onclick="showSection('dashboard')">Dashboard</a>
+                    <a href="#campos" class="header-link" data-section="campos" onclick="showSection('campos')">Campos</a>
+                    <a href="#reservas" class="header-link" data-section="reservas" onclick="showSection('reservas')">Reservas</a>
+                    <a href="#resultados" class="header-link" data-section="resultados" onclick="showSection('resultados')">Resultados</a>
+                    <a href="#usuarios" class="header-link hidden" id="nav-usuarios" data-section="usuarios" onclick="showSection('usuarios')">Usuarios</a>
+                    <div class="header-divider"></div>
+                    <a href="#" class="header-link" onclick="logout()">Salir</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container py-2">
+        <div id="message-container" style="position: fixed; top: 20px; right: 20px; z-index: 1000;"></div>
+
+        <div id="dashboard-section">
+            <div class="page-header">
+                <div>
+                    <h2 class="page-title">Panel de Control</h2>
+                    <p class="page-subtitle">Bienvenido de nuevo</p>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">.</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="total-reservas">-</div>
+                        <div class="stat-label">Mis Reservas</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">.</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="total-campos">-</div>
+                        <div class="stat-label">Campos Disponibles</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">.</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="mi-handicap">-</div>
+                        <div class="stat-label">Mi Handicap</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">.</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="total-partidos">-</div>
+                        <div class="stat-label">Partidos Jugados</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <h3 class="section-title">Próximas Reservas</h3>
+                </div>
+                <div class="card-table">
+                    <div id="proximas-reservas"></div>
+                </div>
+            </div>
+        </div>
+
+        
+        <div id="campos-section" class="hidden">
+            <div class="page-header">
+                <div>
+                    <h2 class="page-title">Gestión de Campos</h2>
+                    <p class="page-subtitle">Administra los campos de golf</p>
+                </div>
+                <button class="btn btn-accent visible" onclick="openModal('campo-modal')">➕ Nuevo Campo</button>
+            </div>
+
+            <div class="section">
+                <div class="filters">
+                    <div class="filters-search">
+                        <label for="campo-search" class="sr-only">Buscar campo</label>
+                        <input type="text" id="campo-search" placeholder="Buscar campo..." oninput="filterCampos()">
+                    </div>
+                    <select id="campo-ordenar" class="filters-select" onchange="loadCampos()">
+                        <option value="desc">Más recientes</option>
+                        <option value="asc">Más antiguos</option>
+                    </select>
+                </div>
+                <div class="card-table">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Ubicación</th>
+                                <th>Hoyos</th>
+                                <th>Par</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="campos-table"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        
+        <div id="reservas-section" class="hidden">
+            <div class="page-header">
+                <div>
+                    <h2 class="page-title">Mis Reservas</h2>
+                    <p class="page-subtitle">Gestiona tus reservas</p>
+                </div>
+                <button class="btn btn-accent" onclick="openModal('reserva-modal'); populateReservaUsuarios();">➕ Nueva Reserva</button>
+            </div>
+
+            <div class="section">
+                <div class="filters">
+                    <select id="reserva-status" class="filters-select" onchange="loadReservas()">
+                        <option value="">Todas</option>
+                        <option value="confirmada">Confirmadas</option>
+                        <option value="pendiente">Pendientes</option>
+                        <option value="cancelada">Canceladas</option>
+                    </select>
+                </div>
+                <div class="card-table">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Hora</th>
+                                <th>Campo</th>
+                                <th id="reserva-usuario-header">Usuario</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reservas-table"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        
+        <div id="resultados-section" class="hidden">
+            <div class="page-header">
+                <div>
+                    <h2 class="page-title" id="resultados-title">Mis Resultados</h2>
+                    <p class="page-subtitle">Historial de partidas</p>
+                </div>
+                <button class="btn btn-accent" onclick="openModal('resultado-modal')" id="btn-resultado">➕ Registrar Score</button>
+            </div>
+
+            <div class="section" id="resultados-filters">
+                <div class="filters">
+                    <select id="resultado-usuario" class="filters-select" onchange="loadResultados()">
+                        <option value="">Todos los usuarios</option>
+                    </select>
+                </div>
+                <div class="card-table">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Fecha</th>
+                                <th>Campo</th>
+                                <th>Score</th>
+                                <th>vs Par</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultados-table"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        
+        <div id="usuarios-section" class="hidden">
+            <div class="page-header">
+                <div>
+                    <h2 class="page-title">Gestión de Usuarios</h2>
+                    <p class="page-subtitle">Administra usuarios del club</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="card-table">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Rol</th>
+                                <th>Handicap</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usuarios-table"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+    <div class="modal" id="campo-modal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title">Nuevo Campo</h3>
+                <span class="modal-close" onclick="closeModal('campo-modal')">&times;</span>
+            </div>
+            <form onsubmit="handleCreateCampo(event)">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label" for="campo-nombre">Nombre</label>
+                        <input type="text" id="campo-nombre" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="campo-ubicacion">Ubicación</label>
+                        <input type="text" id="campo-ubicacion" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="campo-hoyos">Número de Hoyos</label>
+                        <input type="number" id="campo-hoyos" class="form-input" required min="9" max="18">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="campo-par">Par</label>
+                        <input type="number" id="campo-par" class="form-input" required min="60" max="80">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost" onclick="closeModal('campo-modal')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    
+    <div class="modal" id="reserva-modal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title">Nueva Reserva</h3>
+                <span class="modal-close" onclick="closeModal('reserva-modal')">&times;</span>
+            </div>
+            <form onsubmit="handleCreateReserva(event)">
+                <div class="modal-body">
+                    <div class="form-group" id="reserva-usuario-group">
+                        <label class="form-label" for="reserva-usuario">Usuario</label>
+                        <select id="reserva-usuario" class="form-select"></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="reserva-campo">Campo</label>
+                        <select id="reserva-campo" class="form-select" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="reserva-fecha">Fecha</label>
+                        <input type="date" id="reserva-fecha" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="reserva-hora">Hora</label>
+                        <input type="time" id="reserva-hora" class="form-input" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost" onclick="closeModal('reserva-modal')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Reservar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    
+    <div class="modal" id="resultado-modal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title">Registrar Score</h3>
+                <span class="modal-close" onclick="closeModal('resultado-modal')">&times;</span>
+            </div>
+            <form onsubmit="handleCreateResultado(event)">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label" for="resultado-campo">Campo</label>
+                        <select id="resultado-campo" class="form-select" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="resultado-fecha">Fecha</label>
+                        <input type="date" id="resultado-fecha" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="resultado-score">Score Total</label>
+                        <input type="number" id="resultado-score" class="form-input" required min="40" max="200">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost" onclick="closeModal('resultado-modal')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-inner">
+                <div class="footer-brand"> Cheshire Golf Club</div>
+                <p class="footer-copy">&copy; 2026 - Donde el tiempo te pertenece</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/app.js"></script>
+    <script>
+        let user = null;
+        let isAdmin = false;
+        let camposData = [];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const userStr = localStorage.getItem('user');
+            if (!userStr) {
+                window.location.href = '/views/index.html';
+                return;
+            }
+            user = JSON.parse(userStr);
+            isAdmin = user.rol === 'admin';
+            setupRoleUI();
+            await loadDashboard();
+        });
+
+        function setupRoleUI() {
+            const roleBadge = document.getElementById('user-role');
+            roleBadge.textContent = isAdmin ? 'ADMIN' : 'JUGADOR';
+            roleBadge.className = isAdmin ? 'badge badge-admin' : 'badge badge-jugador';
+
+            document.getElementById('btn-resultado').style.display = isAdmin ? 'none' : 'block';
+            document.getElementById('resultados-filters').style.display = isAdmin ? 'block' : 'none';
+
+            if (!isAdmin) {
+                document.getElementById('reservas-section').querySelector('.page-title').textContent = 'Mis Reservas';
+                document.getElementById('resultados-title').textContent = 'Mis Resultados';
+            } else {
+                document.getElementById('nav-usuarios').classList.remove('hidden');
+                document.getElementById('reservas-section').querySelector('.page-title').textContent = 'Todas las Reservas';
+                document.getElementById('resultados-title').textContent = 'Todos los Resultados';
+            }
+        }
+
+        async function loadDashboard() {
+            try {
+                const [reservas, campos, resultados] = await Promise.all([
+                    isAdmin ? api.reservas.getAll() : api.reservas.getByUser(user._id),
+                    api.campos.getAll(),
+                    isAdmin ? api.resultados.getAll() : api.resultados.getByUser(user._id)
+                ]);
+
+                document.getElementById('total-reservas').textContent = reservas.length;
+                document.getElementById('total-campos').textContent = campos.length;
+                document.getElementById('mi-handicap').textContent = user.handicap || '-';
+                document.getElementById('total-partidos').textContent = resultados.length;
+
+                renderProximasReservas(reservas.slice(0, 5));
+            } catch (err) {
+                showMessage(err.message);
+            }
+        }
+
+        function renderProximasReservas(reservas) {
+            const container = document.getElementById('proximas-reservas');
+            if (reservas.length === 0) {
+                container.innerHTML = '<div class="table-empty"><div class="table-empty-icon"></div><p>No hay reservas próximas</p></div>';
+                return;
+            }
+            container.innerHTML = `
+                <table class="table">
+                    <thead><tr><th>Fecha</th><th>Hora</th><th>Campo</th><th>Usuario</th><th>Estado</th></tr></thead>
+                    <tbody>
+                        ${reservas.map(r => `
+                            <tr>
+                                <td data-label="Fecha">${new Date(r.fecha).toLocaleDateString()}</td>
+                                <td data-label="Hora">${r.hora}</td>
+                                <td data-label="Campo"><div class="field-info"><span class="field-name">${r.campo_id?.nombre || '-'}</span></div></td>
+                                <td data-label="Usuario">${isAdmin ? (r.usuario_id?.nombre || '-') : ''}</td>
+                                <td data-label="Estado"><span class="status-badge status-${r.estado}">${r.estado}</span></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function showSection(section) {
+            event.preventDefault();
+            document.querySelectorAll('.header-link').forEach(link => link.classList.remove('active'));
+            document.querySelector(`[data-section="${section}"]`)?.classList.add('active');
+
+            ['dashboard', 'campos', 'reservas', 'resultados', 'usuarios'].forEach(s => {
+                document.getElementById(`${s}-section`).classList.add('hidden');
+            });
+            document.getElementById(`${section}-section`).classList.remove('hidden');
+
+            if (section === 'campos') loadCampos();
+            if (section === 'reservas') loadReservas();
+            if (section === 'resultados') loadResultados();
+            if (section === 'usuarios') loadUsuarios();
+        }
+
+        async function loadCampos() {
+            try {
+                const ordenar = document.getElementById('campo-ordenar').value;
+                camposData = await api.campos.getAll(ordenar);
+                renderCampos(camposData);
+            } catch (err) {
+                showMessage(err.message);
+            }
+        }
+
+        function renderCampos(campos) {
+            const search = document.getElementById('campo-search').value.toLowerCase();
+            const filtered = campos.filter(c => c.nombre.toLowerCase().includes(search));
+
+            const acciones = isAdmin ? `<button class="btn btn-sm btn-danger" onclick="deleteCampo('${c._id}')">Eliminar</button>` : '-';
+
+            document.getElementById('campos-table').innerHTML = filtered.length === 0 
+                ? '<tr><td colspan="5" class="table-empty">No hay campos</td></tr>'
+                : filtered.map(c => `
+                    <tr>
+                        <td data-label="Nombre"><div class="field-info"><span class="field-name">${c.nombre}</span></div></td>
+                        <td data-label="Ubicación">${c.ubicacion}</td>
+                        <td data-label="Hoyos">${c.hoyos}</td>
+                        <td data-label="Par">${c.par}</td>
+                        <td data-label="Acciones" class="table-actions">${acciones}</td>
+                    </tr>
+                `).join('');
+
+            document.querySelector('#campos-section .btn-accent').style.display = isAdmin ? 'block' : 'none';
+        }
+
+        function filterCampos() {
+            renderCampos(camposData);
+        }
+
+        async function handleCreateCampo(e) {
+            e.preventDefault();
+            const campoData = {
+                nombre: document.getElementById('campo-nombre').value,
+                ubicacion: document.getElementById('campo-ubicacion').value,
+                hoyos: parseInt(document.getElementById('campo-hoyos').value),
+                par: parseInt(document.getElementById('campo-par').value)
+            };
+            try {
+                await api.campos.create(campoData);
+                showMessage('Campo creado correctamente', 'success');
+                closeModal('campo-modal');
+                loadCampos();
+            } catch (err) {
+                showMessage(err.message);
+            }
+        }
+
+        async function deleteCampo(id) {
+            if (!confirm('¿Eliminar este campo?')) return;
+            try {
+                await api.campos.delete(id);
+                showMessage('Campo eliminado', 'success');
+                loadCampos();
+            } catch (err) {
+                showMessage(err.message);
+            }
+        }
+
+        async function loadReservas() {
+            try {
+                const reservas = isAdmin ? await api.reservas.getAll() : await api.reservas.getByUser(user._id);
+                const status = document.getElementById('reserva-status').value;
+                const filtered = status ? reservas.filter(r => r.estado === status) : reservas;
+                
+                document.getElementById('reserva-usuario-header').style.display = isAdmin ? '' : 'none';
+                
+                document.getElementById('reservas-table').innerHTML = filtered.length === 0
+                    ? '<tr><td colspan="6" class="table-empty">No hay reservas</td></tr>'
+                    : filtered.map(r => `
+                        <tr>
+                            <td data-label="Fecha">${new Date(r.fecha).toLocaleDateString()}</td>
+                            <td data-label="Hora">${r.hora}</td>
+                            <td data-label="Campo"><div class="field-info"><span class="field-name">${r.campo_id?.nombre || '-'}</span></div></td>
+                            <td data-label="Usuario" class="user-cell" style="display:${isAdmin ? 'table-cell' : 'none'}">
+                                <div class="user-avatar">${(r.usuario_id?.nombre || 'U').charAt(0)}</div>
+                                <span class="user-name">${r.usuario_id?.nombre || '-'}</span>
+                            </td>
+                            <td data-label="Estado"><span class="status-badge status-${r.estado}">${r.estado}</span></td>
+                            <td data-label="Acciones" class="table-actions">
+                                <button class="btn btn-sm btn-danger" onclick="cancelReserva('${r._id}')">Cancelar</button>
+                            </td>
+                        </tr>
+                    `).join('');
+
+                populateCamposSelect();
+            } catch (err) {
+                showMessage(err.message);
+            }
+        }
+
+        async function populateCamposSelect() {
+            if (camposData.length === 0) {
+                camposData = await api.campos.getAll();
+            }
+            const options = camposData.map(c => `<option value="${c._id}">${c.nombre}</option>`).join('');
+            document.getElementById('reserva-campo').innerHTML = options;
+            document.getElementById('resultado-campo').innerHTML = options;
+        }
+
+        async function handleCreateReserva(e) {
+            e.preventDefault();
+            const reservaData = {
+                usuario: isAdmin ? document.getElementById('reserva-usuario').value : user._id,
+                campo: document.getElementById('reserva-campo').value,
+                fecha: document.getElementById('reserva-fecha').value,
+                hora: document.getElementById('reserva-hora').value
+            };
+            try {
+                await api.reservas.create(reservaData);
+                showMessage('Reserva creada correctamente', 'success');
+                closeModal('reserva-modal');
+                loadReservas();
+            } catch (err) {
+                showMessage(err.message);
+            }
+        }
+
+        async function populateReservaUsuarios() {
+            if (!isAdmin) return;
+            const usuarios = await api.usuarios.getAll();
+            const options = usuarios.map(u => `<option value="${u._id}">${u.nombre}</option>`).join('');
+            document.getElementById('reserva-usuario').innerHTML = options;
+            document.getElementById('reserva-usuario-group').style.display = 'block';
+        }
+
+        async function cancelReserva(id) {
+            if (!confirm('¿Cancelar esta reserva?')) return;
+            try {
+                await api.reservas.cancel(id);
+                showMessage('Reserva cancelada', 'success');
+                loadReservas();
+            } catch (err) {
+                showMessage(err.message);
+            }
+        }
+
+        async function loadResultados() {
+            try {
+                const resultados = isAdmin ? await api.resultados.getAll() : await api.resultados.getByUser(user._id);
+
+                document.getElementById('resultados-table').innerHTML = resultados.length === 0
+                    ? '<tr><td colspan="5" class="table-empty">No hay resultados</td></tr>'
+                    : resultados.map(r => {
+                        const par = r.campo_id?.par || 72;
+                        const diffe = r.puntuacion - par;
+                        const diffeClass = diffe > 0 ? 'score-over' : diffe < 0 ? 'score-under' : '';
+                        const diffeSign = diffe > 0 ? '+' : '';
+                        return `
+                            <tr>
+                                <td data-label="Usuario">${isAdmin ? (r.usuario_id?.nombre || '-') : ''}</td>
+                                <td data-label="Fecha">${new Date(r.fecha).toLocaleDateString()}</td>
+                                <td data-label="Campo"><div class="field-info"><span class="field-name">${r.campo_id?.nombre || '-'}</span><span class="field-location">Par ${par}</span></div></td>
+                                <td data-label="Score"><span class="score-value">${r.puntuacion}</span></td>
+                                <td data-label="vs Par"><span class="score-vs ${diffeClass}">${diffeSign}${diffe}</span></td>
+                            </tr>
+                        `;
+                    }).join('');
+
+                if (isAdmin) {
+                    const usuarios = await api.usuarios.getAll();
+                    const options = usuarios.map(u => `<option value="${u._id}">${u.nombre}</option>`).join('');
+                    document.getElementById('resultado-usuario').innerHTML = `<option value="">Todos los usuarios</option>${options}`;
+                }
+            } catch (err) {
+                showMessage(err.message);
+            }
+        }
+
+        async function loadUsuarios() {
+            if (!isAdmin) return;
+            try {
+                const usuarios = await api.usuarios.getAll();
+                document.getElementById('usuarios-table').innerHTML = usuarios.map(u => `
+                    <tr>
+                        <td data-label="Nombre">
+                            <div class="user-cell">
+                                <div class="user-avatar">${u.nombre.charAt(0)}</div>
+                                <span class="user-name">${u.nombre}</span>
+                            </div>
+                        </td>
+                        <td data-label="Email">${u.email}</td>
+                        <td data-label="Rol"><span class="badge badge-${u.rol === 'admin' ? 'admin' : 'jugador'}">${u.rol}</span></td>
+                        <td data-label="Handicap">${u.handicap || '-'}</td>
+                        <td data-label="Acciones" class="table-actions">
+                            ${u._id !== user._id ? `<button class="btn btn-sm btn-danger" onclick="deleteUsuario('${u._id}')">Eliminar</button>` : '-'}
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                showMessage(err.message);
+            }
+        }
+
+        async function deleteUsuario(id) {
+            if (!confirm('¿Eliminar este usuario?')) return;
+            try {
+                await api.usuarios.delete(id);
+                showMessage('Usuario eliminado', 'success');
+                loadUsuarios();
+            } catch (err) {
+                showMessage(err.message);
+            }
+        }
+
+        async function handleCreateResultado(e) {
+            e.preventDefault();
+            const resultadoData = {
+                usuario: user._id,
+                campo: document.getElementById('resultado-campo').value,
+                fecha: document.getElementById('resultado-fecha').value,
+                puntuacion: parseInt(document.getElementById('resultado-score').value)
+            };
+            try {
+                await api.resultados.create(resultadoData);
+                showMessage('Score guardado correctamente', 'success');
+                closeModal('resultado-modal');
+                loadResultados();
+            } catch (err) {
+                showMessage(err.message);
+            }
+        }
+
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+            if (id === 'reserva-modal' || id === 'resultado-modal') {
+                populateCamposSelect();
+            }
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+    </script>
+</body>
+</html>

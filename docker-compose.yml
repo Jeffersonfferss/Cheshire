@@ -1,31 +1,37 @@
 services:
   app:
-    container_name: ${APP_HOST}
+    container_name: cheshire-app
     build: .
     restart: unless-stopped
     ports:
-      - "${APP_PORT}:3000"
+      - "3000:3000"
     volumes:
       - .:/app
       - /app/node_modules
     env_file:
       - .env
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
 
   mongo:
     image: mongo:latest
-    container_name: ${MONGO_HOST}
+    container_name: cheshire-mongo
     restart: unless-stopped
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
-      MONGO_INITDB_DATABASE: ${MONGO_DB}
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: golfpassword123
+      MONGO_INITDB_DATABASE: cheshire
     ports:
-      - "${MONGO_PORT}:27017"
+      - "27017:27017"
     volumes:
       - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
 volumes:
   mongo_data:
-  node_modules:

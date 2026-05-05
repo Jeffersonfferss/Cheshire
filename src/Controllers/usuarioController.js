@@ -1,4 +1,5 @@
 const Usuario = require('../Models/Usuario');
+const jwt = require('jsonwebtoken');
 
 
 const registrarUsuario = async (req, res) => {
@@ -19,10 +20,49 @@ const registrarUsuario = async (req, res) => {
     }
 };
 
-// 2. Obtener perfil de usuario
+const iniciarSesion = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({ mensaje: 'Email y contraseña son requeridos' });
+        }
+
+        const usuario = await Usuario.findOne({ email });
+        if (!usuario) {
+            return res.status(401).json({ mensaje: 'Credenciales inválidas' });
+        }
+
+        const esValido = await usuario.comparePassword(password);
+        if (!esValido) {
+            return res.status(401).json({ mensaje: 'Credenciales inválidas' });
+        }
+
+        const token = jwt.sign(
+            { id: usuario._id, rol: usuario.rol },
+            process.env.JWT_SECRET,
+            { expiresIn: '7d' }
+        );
+
+        res.status(200).json({
+            mensaje: 'Login exitoso',
+            token,
+            usuario: {
+                _id: usuario._id,
+                nombre: usuario.nombre,
+                email: usuario.email,
+                rol: usuario.rol,
+                handicap: usuario.handicap
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ mensaje: 'Error al iniciar sesión', error: error.message });
+    }
+};
+
 const obtenerPerfil = async (req, res) => {
     try {
-        const usuario = await Usuario.findById(req.params.id);
+        const usuario = await Usuario.findById(req.params.id).select('-password');
         if (!usuario) return res.status(404).json({ mensaje: 'Usuario no encontrado' });
         res.status(200).json(usuario);
     } catch (error) {
@@ -30,4 +70,25 @@ const obtenerPerfil = async (req, res) => {
     }
 };
 
-module.exports = { registrarUsuario, obtenerPerfil };
+const listarUsuarios = async (req, res) => {
+    try {
+        const usuarios = await Usuario.find().select('-password');
+        res.status(200).json(usuarios);
+    } catch (error) {
+        res.status(500).json({ mensaje: 'Error al listar usuarios', error: error.message });
+    }
+};
+
+const eliminarUsuario = async (req, res) => {
+    try {
+        const usuario = await Usuario.findByIdAndDelete(req.params.id);
+        if (!usuario) {
+            return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+        }
+        res.status(200).json({ mensaje: 'Usuario eliminado' });
+    } catch (error) {
+        res.status(500).json({ mensaje: 'Error al eliminar usuario', error: error.message });
+    }
+};
+
+module.exports = { registrarUsuario, iniciarSesion, obtenerPerfil, listarUsuarios, eliminarUsuario };

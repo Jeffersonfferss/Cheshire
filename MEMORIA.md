@@ -129,4 +129,4 @@ Desarrollo realizado por un único desarrollador:
 
 ---
 
-**Fecha de entrega:** Mayo 2026
+ Mayo 2026
