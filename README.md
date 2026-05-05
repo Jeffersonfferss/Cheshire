@@ -36,15 +36,6 @@ npm start
 
 Crear archivo `.env`:
 
-```env
-PORT=3000
-MONGODB_URI=mongodb://admin:golfpassword123@mongo:27017/cheshire?authSource=admin
-
-  ##
-  
-JWT_SECRET=cheshire_jwt_secret_key_2026
-NODE_ENV=development
-```
 
 ### Docker
 
