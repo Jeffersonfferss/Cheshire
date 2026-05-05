@@ -1,136 +1,127 @@
-# Cheshire - API de Gestión de Club de Golf
+# Cheshire - Club de Golf Management
 
-API Backend para la gestión completa de un club de golf. El nombre hace referencia al gato de Cheshire de Alicia en el país de las maravillas, simbolizando una presencia sutil que facilita cada movimiento del jugador.
+**Cheshire** es una aplicación web completa para la gestión de un club de golf. Permite a los jugadores reservartee times, registrar sus puntuaciones y seguir su handicap, mientras que los administradores pueden gestionar usuarios, campos y reservas del sistema.
 
-## Características
+## Descripción
 
-- Gestión de usuarios con roles (admin/jugador)
-- Sistema de reservas de tee times
-- Registro de resultados y puntuaciones
-- Control de handicap por jugador
-- Interfaz web responsive
+Cheshire es una solución integral que digitaliza la gestión de un club de golf. Los jugadores pueden crear una cuenta, reservar horarios en los campos disponibles, registrar sus partidas y consultar su historial de resultados. Los administradores tienen acceso completo para gestionar usuarios, crear y editar campos de golf, visualizar todas las reservas del sistema y administrar los resultados de todos los jugadores.
 
-## Requisitos
+La aplicación cuenta con una interfaz web moderna y responsiva que se adapta a cualquier dispositivo, permitiendo a los usuarios gestionar sus reservas desde cualquier lugar.
 
-- Node.js 18+
-- MongoDB 6+
-- Docker (opcional)
+## Funcionalidades
 
-## Instalación
+### Para Jugadores
 
-```bash
-npm install
-```
+- Registro e inicio de sesión seguro
+- Visualización de campos de golf disponibles
+- Creación y cancelación de reservas propias
+- Registro de puntuaciones de partidas
+- Consulta de historial de resultados
+- Seguimiento del handicap
 
-## Ejecución
+### Para Administradores
 
-```bash
-# Desarrollo
-npm run dev
+- Gestión completa de usuarios
+- Creación, edición y eliminación de campos
+- Visualización de todas las reservas del sistema
+- Cancelación de cualquier reserva
+- Gestión de resultados de todos los jugadores
 
-# Producción
-npm start
-```
+## Arquitectura
 
-## Configuración
-
-Crear archivo `.env`:
-
-
-### Docker
-
-```bash
-docker-compose up -d
-```
-
-## Endpoints de la API
-
-### Autenticación
-
-| Método | Endpoint                 | Descripción             |
-|--------|--------------------------|-------------------------|
-| POST   | `/api/usuarios/registro` | Registrar nuevo usuario |
-| POST   |  `/api/usuarios/login`   | Iniciar sesión          |
-
-### Usuarios
-
-| Método | Endpoint                   | Descripción     | Rol      |
-|--------|----------------------------|-----------------|----------|
-| GET    | `/api/usuarios`            | Listar usuarios | Admin    |
-| GET    | `/api/usuarios/perfil/:id` | Ver perfil      |  Usuario |
-| DELETE | `/api/usuarios/:id`        | Eliminar usuario| Admin    |
-  
-### Campos
-
-| Método | Endpoint            | Descripción      | Rol     |
-|--------|---------------------|------------------|---------|
-| GET    | `/api/campos`       | Listar campos    | Usuario |
-| GET    | `/api/campos/:id`   | Ver campo        | Usuario |
-| POST   | `/api/campos/nuevo` | Crear campo      | Admin   |
-| PUT    | `/api/campos/:id`   | Actualizar campo | Admin   |
-| DELETE | `/api/campos/:id`   | Eliminar campo   | Admin   |
-
-### Reservas
-
-| Método | Endpoint                    | Descripción        |
-|--------|-----------------------------|--------------------|
-| POST   | `/api/reservas`             | Crear reserva      |
-| GET    | `/api/reservas`             | Todas las reservas |
-| GET    | `/api/reservas/usuario/:id` | Mis reservas       |
-| GET    | `/api/reservas/:id`         | Ver reserva        |
-| PUT    | `/api/reservas/:id`         | Actualizar reserva |
-| DELETE | `/api/reservas/:id`         | Cancelar reserva   |
-
-### Resultados
-
-| Método | Endpoint                      | Descripción          | Rol     |
-|--------|-------------------------------|----------------------|---------|
-| POST   | `/api/resultados`             | Guardar tarjeta      | Usuario |
-| GET    | `/api/resultados`             | Todos los resultados | Admin   | 
-| GET    | `/api/resultados/usuario/:id` | Mi historial         | Usuario |
-
-## Parámetros de consulta
-
-- `ordenar=asc|desc` - Ordenar resultados
-- `anio=2026` - Filtrar por año
-- `estado=confirmada|pendiente|cancelada` - Filtrar por estado
-
-## Tecnologías
-
-- **Node.js** - Entorno de ejecución
-- **Express.js** - Framework web
-- **MongoDB** - Base de datos
-- **Mongoose** - ODM
-- **JWT** - Autenticación
-- **bcryptjs** - Hash de contraseñas
-- **Docker** - Contenedores
-
-## Credenciales de prueba
-
-| Rol     | Email              | Contraseña |
-|---------|--------------------|------------|
-| Admin   | admin@cheshire.com | admin123   |
-| Jugador | carlos@golf.com    | admin123   |
-
-## Estructura del proyecto
+El proyecto sigue el patrón **MVC** (Model-View-Controller) con una capa adicional de servicios:
 
 ```
 src/
-├── app.js              # Punto de entrada
-├── db/
-│   └── database.js    # Conexión MongoDB
-├── Models/             # Esquemas Mongoose
-├── Controllers/       # Lógica de endpoints
-├── Services/          # Lógica de negocio
-├── Routes/            # Definición de rutas
-└── Middleware/        # Autenticación JWT
-
-views/                  # Frontend HTML
-public/
-├── css/styles.css    # Estilos
-└── js/app.js          # JavaScript frontend
+├── app.js                 # Punto de entrada de la aplicación
+├── db/database.js         # Configuración de conexión a MongoDB
+├── Models/                # Esquemas de Mongoose
+│   ├── Usuario.js        # Modelo de usuario
+│   ├── Campo.js         # Modelo de campo de golf
+│   ├── Reserva.js       # Modelo de reserva
+│   └── Resultado.js     # Modelo de resultado/partida
+├── Controllers/          # Lógica de los endpoints
+├── Services/            # Lógica de negocio
+├── Routes/              # Definición de rutas API
+└── Middleware/         # Autenticación JWT
 ```
+
+## Stack Tecnológico
+
+| Componente | Tecnología |
+|-----------|------------|
+| Runtime | Node.js |
+| Framework | Express.js |
+| Base de datos | MongoDB |
+| ODM | Mongoose |
+| Autenticación | JWT (JSON Web Tokens) |
+| Hash de contraseñas | bcryptjs |
+| Contenedores | Docker |
+
+## Requisitos del Sistema
+
+- Node.js 18.x o superior
+- MongoDB 6.x o superior
+- Docker (opcional, recomendado)
+
+## Acceso a la Aplicación
+
+La aplicación está disponible en: **http://localhost:3000**
+
+## Credenciales de Prueba
+
+| Rol | Email | Contraseña |
+|-----|-------|------------|
+| Administrador | admin@cheshire.com | admin123 |
+| Jugador | carlos@golf.com | admin123 |
+
+## API Documentation
+
+Para documentación detallada de la API REST, consulta el archivo [INSTALL.md](./docs/INSTALL.md).
+
+## Estructura de Archivos
+
+```
+Cheshire/
+├── src/                    # Código fuente del backend
+│   ├── app.js             # Punto de entrada
+│   ├── db/                # Configuración de base de datos
+│   ├── Models/            # Modelos de Mongoose
+│   ├── Controllers/       # Controladores de la API
+│   ├── Services/          # Servicios de negocio
+│   ├── Routes/           # Definición de rutas
+│   └── Middleware/       # Middleware de autenticación
+├── public/                 # Archivos estáticos públicos
+│   ├── css/              # Hojas de estilo
+│   └── js/               # JavaScript del frontend
+├── views/                  # Plantillas HTML
+├── docs/                   # Documentación
+├── docker-compose.yml     # Configuración de Docker
+├── Dockerfile             # Imagen Docker de la app
+├── package.json          # Dependencias npm
+├── .env.example          # Variables de entorno
+└── README.md             # Este archivo
+```
+
+## Características Técnicas
+
+- **Autenticación**: Sistema de login con JWT que expira en 7 días
+- **Seguridad**: Contraseñas hasheadas con bcrypt (10 rondas)
+- **Autorización**: Control de acceso basado en roles (admin/jugador)
+- **Validación**: Verificación de datos en servidor
+- **Responsive Design**: Interfaz adaptable a móviles y escritorio
+
+## Tecnologías Frontend
+
+- HTML5 semántico
+- CSS3 con variables personalizadas
+- JavaScript vanilla (sin frameworks)
+- Fetch API para comunicación con el backend
 
 ## Licencia
 
 ISC
+
+---
+
+**Cheshire** - *Donde el tiempo te pertenece*

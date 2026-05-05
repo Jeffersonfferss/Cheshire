@@ -1,132 +1,103 @@
-# Memoria del Proyecto - Cheshire
+# Memoria Técnica - Proyecto Cheshire
 
-## 1. Descripción del Proyecto
+## Introducción
 
-**Cheshire** es una API backend para la gestión de un club de golf. El nombre hace referencia al gato de Alicia en el país de las maravillas, simbolizando la presencia sutil que facilita cada movimiento del jugador.
+El presente documento describe el desarrollo técnico de Cheshire, una aplicación web diseñada para la gestión integral de un club de golf. El proyecto consiste en una API REST desarrollada en Node.js con Express.js, backed por MongoDB como base de datos, que proporciona funcionalidades para la administración de usuarios, campos, reservas y resultados de partidas.
 
-## 2. Decisiones Técnicas
+El nombre del proyecto hace referencia al gato de Cheshire, personaje icónico de "Alicia en el país de las maravillas". Esta elección responde a la filosofía del proyecto: una herramienta presente cuando se necesita y invisible cuando no, facilitando cada acción del usuario sin intermediarios innecesarios.
 
-### Arquitectura
-- **Patrón MVC** (Model-View-Controller) con capa de servicios intermedia
-- **Express.js** como framework web
-- **MongoDB + Mongoose** como base de datos y ODM
+## Arquitectura del Sistema
 
-### Estructura del proyecto
-```
-src/
-├── app.js              # Punto de entrada
-├── db/database.js      # Conexión a MongoDB
-├── Models/             # Esquemas de Mongoose
-├── Controllers/        # Lógica de endpoints
-├── Services/         # Lógica de negocio
-├── Routes/            # Definición de rutas
-└── Middleware/        # Autenticación JWT
-```
+### Patrón de Diseño
 
-### Autenticación y Seguridad
-- **JWT (JSON Web Tokens)** para autenticación sin estado
-- **bcryptjs** para hash de contraseñas
-- Roles: `admin` y `jugador`
+La aplicación implementa el patrón MVC (Model-View-Controller) con una capa adicional de servicios. Esta separación de responsabilidades permite mantener un código organizado, donde cada capa tiene funciones claramente definidas. Los modelos establecen la estructura de datos, los controladores gestionan la lógica de los endpoints, los servicios encapsulan la lógica de negocio, y las rutas definen la interfaz pública de la API.
 
-### Base de Datos
-Colecciones implementadas:
-1. **Usuario** - Jugadores del club
-2. **Reserva** - Tee times reservados
-3. **Campo** - Campos de golf disponibles
-4. **Resultado** - Tarjetas de puntuación
+### Estructura de Directorios
 
-## 3. Retos y Soluciones
+El código fuente se organiza de la siguiente manera:
 
-### Reto 1: Autenticación segura
-- **Problema**: Sistema vulnerable con passwords en texto plano
-- **Solución**: Implementación de bcrypt para hash y JWT para sesiones
+- **app.js**: Punto de entrada de la aplicación, configura Express y define las rutas principales.
+- **db/database.js**: Módulo de conexión a MongoDB utilizando Mongoose.
+- **Models/**: Esquemas de Mongoose que definen la estructura de cada colección en la base de datos.
+- **Controllers/**: Funciones que manejan las peticiones HTTP y retornan las respuestas.
+- **Services/**: Capa intermedia que encapsula la lógica de negocio.
+- **Routes/**: Definición de endpoints de la API.
+- **Middleware/**: Funciones intermedias, destacando el sistema de autenticación JWT.
 
-### Reto 2: Middleware de autorización
-- **Problema**: Verificación de roles vía headers era insegura
-- **Solución**: Token JWT con payload que incluye el rol
+## Modelo de Datos
 
-### Reto 3: Disponibilidad de reservas
-- **Problema**: Conflictos de horarios
-- **Solución**: Verificación de disponibilidad antes de crear reserva
+### Usuario
 
-### Reto 4: Gestión de múltiples endpoints por recurso
-- **Problema**: Endpoints insuficientes para CRUD completo
-- **Solución**: Implementación de endpoints adicionales (PUT, DELETE, GET individual)
+El modelo de Usuario representa a los miembros del club de golf. Cada documento contiene el nombre completo, correo electrónico único, contraseña hasheada, rol (administrador o jugador) y handicap del usuario. La contraseña se procesa con bcrypt antes de almacenarse, garantizando que nunca se guarda en texto plano.
 
-## 4. Endpoints Implementados
+### Campo
 
-### Usuarios (`/api/usuarios`)
-| Endpoint | Método | Función |
-|----------|--------|----------|
-| `/api/usuarios/registro` | POST | Registrar usuario |
-| `/api/usuarios/login` | POST | Iniciar sesión |
-| `/api/usuarios` | GET | Listar usuarios (paginado, filtro) |
-| `/api/usuarios/perfil/:id` | GET | Ver perfil |
-| `/api/usuarios/:id` | PUT | Actualizar usuario |
-| `/api/usuarios/:id` | DELETE | Eliminar usuario |
-| `/api/usuarios/:id/handicap` | PATCH | Actualizar handicap |
+El modelo de Campo define las instalaciones de golf disponibles. Incluye el nombre, ubicación geográfica, número de hoyos (9 o 18), par del campo y precios para socios e invitados.
 
-### Reservas (`/api/reservas`)
-| Endpoint | Método | Función |
-|----------|--------|----------|
-| `/api/reservas` | POST | Crear reserva |
-| `/api/reservas` | GET | Listar todas (con filtros) |
-| `/api/reservas/disponibilidad` | GET | Ver horarios disponibles |
-| `/api/reservas/usuario/:id` | GET | Mis reservas |
-| `/api/reservas/:id` | GET | Detalles de reserva |
-| `/api/reservas/:id` | PUT | Actualizar reserva |
-| `/api/reservas/:id` | DELETE | Cancelar reserva |
+### Reserva
 
-### Campos (`/api/campos`)
-| Endpoint | Método | Función |
-|----------|--------|----------|
-| `/api/campos` | GET | Listar campos |
-| `/api/campos/:id` | GET | Ver campo |
-| `/api/campos` | POST | Crear campo (admin) |
-| `/api/campos/:id` | PUT | Actualizar campo (admin) |
-| `/api/campos/:id` | DELETE | Eliminar campo (admin) |
+El modelo de Reserva gestiona las reservas de tee times. Almacena la referencia al usuario que reserva, el campo seleccionado, fecha, hora, número de hoyos y estado de la reserva (confirmada, pendiente o cancelada). El sistema verifica la disponibilidad del horario antes de confirmar una nueva reserva.
 
-### Resultados (`/api/resultados`)
-| Endpoint | Método | Función |
-|----------|--------|----------|
-| `/api/resultados` | POST | Guardar tarjeta |
-| `/api/resultados` | GET | Listar todos (admin) |
-| `/api/resultados/usuario/:id` | GET | Ver historial |
-| `/api/resultados/:id` | GET | Ver resultado |
-| `/api/resultados/:id` | PUT | Actualizar resultado |
-| `/api/resultados/:id` | DELETE | Eliminar resultado (admin) |
+### Resultado
 
-## 5. Distribución de Tareas
+El modelo de Resultado registra las puntuaciones de las partidas jugadas. Contiene la referencia al usuario, campo, fecha de la partida y puntuación obtenida. Este modelo permite a los jugadores consultar su historial y seguimiento del handicap.
 
-Desarrollo realizado por un único desarrollador:
-- Diseño de arquitectura
-- Implementación de modelos
-- Creación de servicios y controladores
-- Configuración de rutas
-- Implementación de autenticación JWT
-- Documentación con JSDoc
-- Ampliación de endpoints CRUD
+## Autenticación y Seguridad
 
-## 6. Tecnologías Utilizadas
+El sistema de autenticación utiliza JSON Web Tokens (JWT). Cuando un usuario inicia sesión correctamente, el servidor genera un token que incluye el identificador del usuario y su rol. Este token debe enviarse en el header de Authorization de cada petición protegida.
 
-| Tecnología | Uso |
-|------------|-----|
-| Node.js | Entorno de ejecución |
-| Express.js | Framework web |
-| MongoDB | Base de datos |
-| Mongoose | ODM |
+Las contraseñas se almacenan utilizando bcrypt con 10 rondas de salting, proporcionando protección contra ataques de fuerza bruta y rainbow tables. El middleware de autenticación verifica la validez del token en cada request protegido, y el middleware de autorización controla el acceso a rutas específicas según el rol del usuario.
+
+## Endpoints de la API
+
+### Usuarios
+
+- **POST /api/usuarios/registro**: Crea un nuevo usuario en el sistema.
+- **POST /api/usuarios/login**: Autentica a un usuario y retorna un token JWT.
+- **GET /api/usuarios**: Lista todos los usuarios. Restringido a administradores.
+- **GET /api/usuarios/perfil/:id**: Obtiene el perfil de un usuario específico.
+- **DELETE /api/usuarios/:id**: Elimina un usuario. Restringido a administradores.
+
+### Campos
+
+- **GET /api/campos**: Lista todos los campos disponibles.
+- **POST /api/campos/nuevo**: Crea un nuevo campo. Restringido a administradores.
+- **PUT /api/campos/:id**: Actualiza la información de un campo.
+- **DELETE /api/campos/:id**: Elimina un campo.
+
+### Reservas
+
+- **POST /api/reservas**: Crea una nueva reserva.
+- **GET /api/reservas**: Lista todas las reservas. Restringido a administradores.
+- **GET /api/reservas/usuario/:id**: Lista las reservas de un usuario específico.
+- **DELETE /api/reservas/:id**: Cancela una reserva existente.
+
+### Resultados
+
+- **POST /api/resultados**: Registra el resultado de una partida.
+- **GET /api/resultados**: Lista todos los resultados. Restringido a administradores.
+- **GET /api/resultados/usuario/:id**: Lista el historial de resultados de un usuario.
+
+## Tecnologías Utilizadas
+
+| Tecnología | Propósito |
+|-----------|-----------|
+| Node.js | Entorno de ejecución JavaScript |
+| Express.js | Framework web para API REST |
+| MongoDB | Base de datos documental |
+| Mongoose | ODM para modelado de datos |
 | bcryptjs | Hash de contraseñas |
-| jsonwebtoken | Autenticación JWT |
-| Docker | Contenedores |
-| nodemon | Desarrollo |
+| jsonwebtoken | Generación y verificación de JWT |
+| Docker | Contenedores para despliegue |
 
-## 7. Mejoras Futuras
+## Despliegue
 
-- Paginación en listados
-- Filtrado avanzado de reservas
-- Sistema de notificaciones
-- Panel de administración web
+La aplicación está configurada para ejecutarse mediante Docker Compose, que orchestration un contenedor para la API Node.js y otro para MongoDB. Esta configuración facilita el despliegue y garantiza consistencia entre entornos.
+
+## Conclusiones
+
+El proyecto Cheshire cumple con los objetivos establecidos, proporcionando una solución funcional para la gestión de un club de golf. La arquitectura MVC, el sistema de autenticación robusto y la separación de responsabilidades facilitan el mantenimiento y futuras extensiones del sistema.
 
 ---
 
- Mayo 2026
+**:** Mayo 2026
