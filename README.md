@@ -39,6 +39,9 @@ Crear archivo `.env`:
 ```env
 PORT=3000
 MONGODB_URI=mongodb://admin:golfpassword123@mongo:27017/cheshire?authSource=admin
+
+  ##
+  
 JWT_SECRET=cheshire_jwt_secret_key_2026
 NODE_ENV=development
 ```
@@ -53,47 +56,47 @@ docker-compose up -d
 
 ### Autenticación
 
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| POST | `/api/usuarios/registro` | Registrar nuevo usuario |
-| POST | `/api/usuarios/login` | Iniciar sesión |
+| Método | Endpoint                 | Descripción             |
+|--------|--------------------------|-------------------------|
+| POST   | `/api/usuarios/registro` | Registrar nuevo usuario |
+| POST   |  `/api/usuarios/login`   | Iniciar sesión          |
 
 ### Usuarios
 
-| Método | Endpoint | Descripción | Rol |
-|--------|----------|-------------|-----|
-| GET | `/api/usuarios` | Listar usuarios | Admin |
-| GET | `/api/usuarios/perfil/:id` | Ver perfil | Usuario |
-| DELETE | `/api/usuarios/:id` | Eliminar usuario | Admin |
-
+| Método | Endpoint                   | Descripción     | Rol      |
+|--------|----------------------------|-----------------|----------|
+| GET    | `/api/usuarios`            | Listar usuarios | Admin    |
+| GET    | `/api/usuarios/perfil/:id` | Ver perfil      |  Usuario |
+| DELETE | `/api/usuarios/:id`        | Eliminar usuario| Admin    |
+  
 ### Campos
 
-| Método | Endpoint | Descripción | Rol |
-|--------|----------|-------------|-----|
-| GET | `/api/campos` | Listar campos | Usuario |
-| GET | `/api/campos/:id` | Ver campo | Usuario |
-| POST | `/api/campos/nuevo` | Crear campo | Admin |
-| PUT | `/api/campos/:id` | Actualizar campo | Admin |
-| DELETE | `/api/campos/:id` | Eliminar campo | Admin |
+| Método | Endpoint            | Descripción      | Rol     |
+|--------|---------------------|------------------|---------|
+| GET    | `/api/campos`       | Listar campos    | Usuario |
+| GET    | `/api/campos/:id`   | Ver campo        | Usuario |
+| POST   | `/api/campos/nuevo` | Crear campo      | Admin   |
+| PUT    | `/api/campos/:id`   | Actualizar campo | Admin   |
+| DELETE | `/api/campos/:id`   | Eliminar campo   | Admin   |
 
 ### Reservas
 
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| POST | `/api/reservas` | Crear reserva |
-| GET | `/api/reservas` | Todas las reservas |
-| GET | `/api/reservas/usuario/:id` | Mis reservas |
-| GET | `/api/reservas/:id` | Ver reserva |
-| PUT | `/api/reservas/:id` | Actualizar reserva |
-| DELETE | `/api/reservas/:id` | Cancelar reserva |
+| Método | Endpoint                    | Descripción        |
+|--------|-----------------------------|--------------------|
+| POST   | `/api/reservas`             | Crear reserva      |
+| GET    | `/api/reservas`             | Todas las reservas |
+| GET    | `/api/reservas/usuario/:id` | Mis reservas       |
+| GET    | `/api/reservas/:id`         | Ver reserva        |
+| PUT    | `/api/reservas/:id`         | Actualizar reserva |
+| DELETE | `/api/reservas/:id`         | Cancelar reserva   |
 
 ### Resultados
 
-| Método | Endpoint | Descripción | Rol |
-|--------|----------|-------------|-----|
-| POST | `/api/resultados` | Guardar tarjeta | Usuario |
-| GET | `/api/resultados` | Todos los resultados | Admin |
-| GET | `/api/resultados/usuario/:id` | Mi historial | Usuario |
+| Método | Endpoint                      | Descripción          | Rol     |
+|--------|-------------------------------|----------------------|---------|
+| POST   | `/api/resultados`             | Guardar tarjeta      | Usuario |
+| GET    | `/api/resultados`             | Todos los resultados | Admin   | 
+| GET    | `/api/resultados/usuario/:id` | Mi historial         | Usuario |
 
 ## Parámetros de consulta
 
@@ -113,10 +116,10 @@ docker-compose up -d
 
 ## Credenciales de prueba
 
-| Rol | Email | Contraseña |
-|----|-------|------------|
-| Admin | admin@cheshire.com | admin123 |
-| Jugador | carlos@golf.com | admin123 |
+| Rol     | Email              | Contraseña |
+|---------|--------------------|------------|
+| Admin   | admin@cheshire.com | admin123   |
+| Jugador | carlos@golf.com    | admin123   |
 
 ## Estructura del proyecto
 
